@@ -1,0 +1,16 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Angelov\\ResultLists\\": "src/"
+        }
+    },
+    "require": {
+        "symfony/http-foundation": "^3.3",
+        "symfony/routing": "^3.3"
+        "doctrine/orm": "^2.5",
+        "twig/twig": "^2.4",
+    },
+    "require-dev": {
+        "phpspec/phpspec": "^3.4"
+    }
+}
