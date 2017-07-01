@@ -1,10 +1,23 @@
 {
+    "name": "angelov/result-lists",
+    "type": "library",
+    "description": "Building paginatable & sortable result lists",
+    "homepage": "https://github.com/angelov/result-lists",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dejan Angelov",
+            "email": "angelovdejan92@gmail.com",
+            "homepage": "http://angelovdejan.me"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Angelov\\ResultLists\\": "src/"
         }
     },
     "require": {
+        "php": ">=7.0",
         "symfony/http-foundation": "^3.3",
         "symfony/routing": "^3.3",
         "doctrine/orm": "^2.5",
