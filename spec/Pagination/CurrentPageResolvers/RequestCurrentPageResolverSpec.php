@@ -4,18 +4,17 @@ namespace spec\Angelov\ResultLists\Pagination\CurrentPageResolvers;
 
 use Angelov\ResultLists\Pagination\CurrentPageResolvers\CurrentPageResolverInterface;
 use Angelov\ResultLists\Pagination\CurrentPageResolvers\RequestCurrentPageResolver;
+use Angelov\ResultLists\Pagination\CurrentRequestResolvers\CurrentRequestResolverInterface;
 use PhpSpec\ObjectBehavior;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Psr\Http\Message\ServerRequestInterface;
 
 class RequestCurrentPageResolverSpec extends ObjectBehavior
 {
-    function let(RequestStack $requestStack)
+    function let(CurrentRequestResolverInterface $requestResolver, ServerRequestInterface $request)
     {
-        $request = new Request();
-        $requestStack->getCurrentRequest()->willReturn($request);
+        $requestResolver->getCurrentRequest()->willReturn($request);
 
-        $this->beConstructedWith($requestStack);
+        $this->beConstructedWith($requestResolver);
     }
 
     function it_is_initializable()
@@ -33,32 +32,29 @@ class RequestCurrentPageResolverSpec extends ObjectBehavior
         $this->resolve()->shouldReturn(1);
     }
 
-    function it_returns_first_page_when_page_attribute_is_not_a_number(RequestStack $requestStack)
+    function it_returns_first_page_when_page_attribute_is_not_a_number(CurrentRequestResolverInterface $requestResolver, ServerRequestInterface $request)
     {
-        $request = new Request();
-        $request->query->set('page', 'second');
+        $request->getQueryParams()->shouldBeCalled()->willReturn(['page' => 'second']);
 
-        $requestStack->getCurrentRequest()->willReturn($request);
+        $requestResolver->getCurrentRequest()->shouldBeCalled()->willReturn($request);
 
         $this->resolve()->shouldReturn(1);
     }
 
-    function it_reads_the_page_from_request_query_attributes(RequestStack $requestStack)
+    function it_reads_the_page_from_request_query_attributes(CurrentRequestResolverInterface $requestResolver, ServerRequestInterface $request)
     {
-        $request = new Request();
-        $request->query->set('page', '3');
+        $request->getQueryParams()->shouldBeCalled()->willReturn(['page' => '3']);
 
-        $requestStack->getCurrentRequest()->willReturn($request);
+        $requestResolver->getCurrentRequest()->shouldBeCalled()->willReturn($request);
 
         $this->resolve()->shouldReturn(3);
     }
 
-    function it_resolves_the_page_with_different_page_query_attributes(RequestStack $requestStack)
+    function it_resolves_the_page_with_different_page_query_attributes(CurrentRequestResolverInterface $requestResolver, ServerRequestInterface $request)
     {
-        $request = new Request();
-        $request->query->set('pageNumber', '4');
+        $request->getQueryParams()->shouldBeCalled()->willReturn(['pageNumber' => '4']);
 
-        $requestStack->getCurrentRequest()->willReturn($request);
+        $requestResolver->getCurrentRequest()->shouldBeCalled()->willReturn($request);
 
         $this->resolve('pageNumber')->shouldReturn(4);
     }

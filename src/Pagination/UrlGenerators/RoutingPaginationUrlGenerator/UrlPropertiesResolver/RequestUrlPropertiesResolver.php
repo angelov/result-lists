@@ -2,21 +2,19 @@
 
 namespace Angelov\ResultLists\Pagination\UrlGenerators\RoutingPaginationUrlGenerator\UrlPropertiesResolver;
 
-use Symfony\Component\HttpFoundation\RequestStack;
+use Angelov\ResultLists\Pagination\CurrentRequestResolvers\CurrentRequestResolverInterface;
 
 class RequestUrlPropertiesResolver implements UrlPropertiesResolverInterface
 {
-    private $requestStack;
+    private $requestResolver;
 
-    public function __construct(RequestStack $requestStack)
+    public function __construct(CurrentRequestResolverInterface $requestResolver)
     {
-        $this->requestStack = $requestStack;
+        $this->requestResolver = $requestResolver;
     }
 
-    public function resolve(): array
+    public function resolve() : array
     {
-        $request = $this->requestStack->getCurrentRequest();
-
-        return $request->query->all();
+        return $this->requestResolver->getCurrentRequest()->getQueryParams();
     }
 }

@@ -2,17 +2,17 @@
 
 namespace spec\Angelov\ResultLists\Pagination\UrlGenerators\RoutingPaginationUrlGenerator\UrlPropertiesResolver;
 
+use Angelov\ResultLists\Pagination\CurrentRequestResolvers\CurrentRequestResolverInterface;
 use PhpSpec\ObjectBehavior;
 use Angelov\ResultLists\Pagination\UrlGenerators\RoutingPaginationUrlGenerator\UrlPropertiesResolver\RequestUrlPropertiesResolver;
 use Angelov\ResultLists\Pagination\UrlGenerators\RoutingPaginationUrlGenerator\UrlPropertiesResolver\UrlPropertiesResolverInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Psr\Http\Message\ServerRequestInterface;
 
 class RequestUrlPropertiesResolverSpec extends ObjectBehavior
 {
-    function let(RequestStack $requestStack)
+    function let(CurrentRequestResolverInterface $requestResolver)
     {
-        $this->beConstructedWith($requestStack);
+        $this->beConstructedWith($requestResolver);
     }
 
     function it_is_initializable()
@@ -25,13 +25,16 @@ class RequestUrlPropertiesResolverSpec extends ObjectBehavior
         $this->shouldImplement(UrlPropertiesResolverInterface::class);
     }
 
-    function it_reads_the_query_attributes_from_request(RequestStack $requestStack)
-    {
-        $request = new Request();
-        $request->query->set('first', 'value1');
-        $request->query->set('second', 'value2');
+    function it_reads_the_query_attributes_from_request(
+        CurrentRequestResolverInterface $requestResolver,
+        ServerRequestInterface $request
+    ) {
+        $requestResolver->getCurrentRequest()->shouldBeCalled()->willReturn($request);
 
-        $requestStack->getCurrentRequest()->willReturn($request);
+        $request->getQueryParams()->shouldBeCalled()->willReturn([
+            'first' => 'value1',
+            'second' => 'value2'
+        ]);
 
         $this->resolve()->shouldReturn([
             'first' => 'value1',
@@ -39,11 +42,12 @@ class RequestUrlPropertiesResolverSpec extends ObjectBehavior
         ]);
     }
 
-    function it_returns_empty_array_when_there_are_no_query_attributes(RequestStack $requestStack)
-    {
-        $request = new Request();
-
-        $requestStack->getCurrentRequest()->willReturn($request);
+    function it_returns_empty_array_when_there_are_no_query_attributes(
+        CurrentRequestResolverInterface $requestResolver,
+        ServerRequestInterface $request
+    ) {
+        $request->getQueryParams()->shouldBeCalled()->willReturn([]);
+        $requestResolver->getCurrentRequest()->shouldBeCalled()->willReturn($request);
 
         $this->resolve()->shouldReturn([]);
     }

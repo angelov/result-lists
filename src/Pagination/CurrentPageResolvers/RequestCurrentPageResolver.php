@@ -2,20 +2,20 @@
 
 namespace Angelov\ResultLists\Pagination\CurrentPageResolvers;
 
-use Symfony\Component\HttpFoundation\RequestStack;
+use Angelov\ResultLists\Pagination\CurrentRequestResolvers\CurrentRequestResolverInterface;
 
 class RequestCurrentPageResolver implements CurrentPageResolverInterface
 {
-    private $request;
+    private $requestResolver;
 
-    public function __construct(RequestStack $requestStack)
+    public function __construct(CurrentRequestResolverInterface $requestResolver)
     {
-        $this->request = $requestStack->getCurrentRequest();
+        $this->requestResolver = $requestResolver;
     }
 
-    public function resolve(string $pageAttribute = 'page'): int
+    public function resolve(string $pageAttribute = 'page') : int
     {
-        $queryValue = $this->request->get($pageAttribute);
+        $queryValue = $this->requestResolver->getCurrentRequest()->getQueryParams()[$pageAttribute];
 
         if (is_numeric($queryValue)) {
             return (int) $queryValue;
